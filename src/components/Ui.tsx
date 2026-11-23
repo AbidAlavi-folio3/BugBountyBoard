@@ -2,6 +2,7 @@ import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Product } from '../types/api';
 import { money } from '../utils/catalog';
+import { reportError } from '../utils/logger';
 import { cartActions } from '../store';
 import { useAppDispatch, useBackToTop } from '../hooks';
 export function ProductCard({ product }: { product: Product }) {
@@ -70,7 +71,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { failed: 
     return { failed: true };
   }
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('Unexpected UI error', error, info.componentStack);
+    reportError(error, info.componentStack ?? undefined);
   }
   render() {
     return this.state.failed ? (
