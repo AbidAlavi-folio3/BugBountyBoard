@@ -54,10 +54,13 @@ export function Catalog() {
   const state: Remote<ProductsResponse> =
     result?.key === requestKey ? result.state : { status: 'loading' };
   const update = (changes: Partial<Filters>) => setParams(buildParams({ ...filters, ...changes }));
+  // Only push the search to the URL once the input has settled. While the user is
+  // still typing, or right after "Clear filters", the debounced value is stale and
+  // must not overwrite the URL.
   useEffect(() => {
-    if (debounced !== filters.search)
+    if (input === debounced && debounced !== filters.search)
       setParams(buildParams({ ...filters, search: debounced, page: 1 }));
-  }, [debounced, filters, setParams]);
+  }, [input, debounced, filters, setParams]);
   useEffect(() => {
     const controller = new AbortController();
     const id = ++seq.current;
