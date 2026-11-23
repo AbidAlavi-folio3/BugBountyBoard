@@ -47,3 +47,13 @@ still open.
   *not browser-tested*.
 - 400: login shows each field's message. *Code.*
 - 401: signs out. *Code.*
+
+## D3-5 Caching
+
+- Revisiting a page within 60 seconds reuses cached data. *Code and tests*
+  (`src/api/cache.test.ts`). *Not browser-tested.*
+- Stock is refreshed after an order, since `checkout()` clears the cache. *Code.*
+- The cart's stock sync bypasses the cache with `productFresh`, so stock changes
+  reach the cart within about 15 seconds. *Code.* Found during this check: the
+  sync had been using the cached call.
+- Acceptable staleness is explained in `docs/caching.md`.
