@@ -117,6 +117,7 @@ goes to the mock or to a real base URL, depending on `VITE_API_MODE`.
   through the store. This is a shortcut that should be cleaned up.
 - The stock poll calls `productFresh()`, which skips the cache. Other reads use the cache, so a cached product can be up to 60 seconds old (see `docs/caching.md`).
 - Fonts are bundled with `@fontsource` and imported in `src/main.tsx`. Nothing loads from Google at runtime.
-- CI runs lint, format check, typecheck, tests, and build (`.github/workflows/ci.yml`).
+- CI (`.github/workflows/ci.yml`) runs lint, format check, typecheck, tests, and build on every push and pull request.
+- Deploy (`.github/workflows/deploy.yml`) repeats the checks, builds with `VITE_BASE=/BugBountyBoard/`, and publishes to GitHub Pages after each push to `main`. Pull requests never deploy.
 - The Week 1 starter files (the bug board, `mockApi.js`) and an unused service
   file were removed. The history still has them.

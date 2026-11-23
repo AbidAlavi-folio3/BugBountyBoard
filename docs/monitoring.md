@@ -23,8 +23,7 @@ unhandled promise rejections. Those would need `window.onerror` and
 1. **Checkout success rate.** Orders placed divided by checkouts started. A drop
    means something broke in checkout, even when no error is thrown. Track 409s
    separately, because a rising 409 rate points to stock problems rather than bugs.
-2. **API errors by status.** Count of responses by status code (400, 401, 404, 409,
-   500) and by endpoint. A rise in 500s is a server problem. A rise in 401s on
+2. **API errors by status.** Count of responses by status code (400, 401, 404, 409, 500) and by endpoint. A rise in 500s is a server problem. A rise in 401s on
    protected pages can mean sessions are expiring too early.
 3. **Render errors by route.** How often `ErrorBoundary` reports, grouped by the page
    the user was on. Any non-zero rate on a page that has been stable is worth a look.

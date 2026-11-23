@@ -9,7 +9,8 @@ else was considered, and why.
   with typescript-eslint and react-hooks rules.
 - **TypeScript 5.9, not 7:** typescript-eslint supports TypeScript below 6.1, so
   7.x caused an install conflict. Pinned to `~5.9`.
-- **vitest 2.x:** vitest 3 and later need a newer Vite than 5.4.
+- **vitest 2.x:** the latest vitest failed to install next to Vite 5.4 (an
+  ERESOLVE peer conflict), so 2.x is pinned. The version can be revisited after a Vite upgrade.
 - **Line endings:** Git on Windows writes CRLF, so Prettier uses `endOfLine: auto`.
 
 ## D1-2 Mock API
@@ -135,3 +136,45 @@ else was considered, and why.
   missed messages. Choose WebSockets when updates are frequent, need to arrive
   within a second, or flow both ways (such as chat). For a cart that checks stock
   every 15 seconds, the extra connection management isn't worth it.
+
+## D4-1 Accessibility
+
+- **Chosen:** darken the text colors that failed the 4.5:1 contrast check, rather
+  than change the layout or add a theme.
+- **Why:** contrast was the only audit that failed, and darkening the text kept the
+  design. Accessibility scores went from 95 to 100 on home, cart, and login.
+- **Not yet:** a keyboard-only pass through the store.
+
+## D4-2 Performance: self-hosted fonts
+
+- **Chosen:** bundle DM Sans and Space Grotesk with `@fontsource`, instead of loading
+  them from Google Fonts.
+- **Considered:** keeping Google Fonts and moving the link into `index.html`. That
+  saved about 0.15 s, while self-hosting saved about 0.7 s.
+- **Why:** the font request was the largest cost on first paint, and nothing else in
+  the app needed changing. The numbers are in `docs/performance.md`.
+- **Tried and removed:** route-level code splitting, which didn't change the home page.
+
+## D4-5 Testing
+
+- **Chosen:** test behaviour through the real components and the mock API, using
+  jsdom and React Testing Library, rather than only testing helpers.
+- **Why:** the buying flow (cart rules, login, and checkout with its 409) is where a
+  bug would hurt most, so it gets page-level tests.
+- **Not yet:** end-to-end tests in a real browser (Playwright). Listed as the next step
+  in `docs/reflection.md`.
+
+## D4-6 CI
+
+- **Chosen:** one GitHub Actions workflow that runs lint, format check, typecheck,
+  tests, and build on every push and pull request.
+- **Why:** a single job named `check` is simple to require in a ruleset. A ruleset on
+  `main` requires it, so a failing check blocks the merge.
+
+## D4-7 Monitoring
+
+- **Chosen:** route caught render errors through one `reportError()` function with a
+  swappable reporter, and document three metrics to track.
+- **Why:** no monitoring service is connected, so the code only logs to the console
+  today, but adding Sentry later is one call (`setErrorReporter`).
+- **Not yet:** window-level error and promise-rejection listeners. See `docs/monitoring.md`.

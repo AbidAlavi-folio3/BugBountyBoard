@@ -46,9 +46,9 @@ when writing `docs/caching.md`, because the doc said the sync ran every 15
 seconds, and I checked what that call actually did. The fix is in commit
 `c5c8119`.
 
-A second mistake: the first attempt at the Redux-to-cart history rewrite labelled
-the reconstructed commits in a way that could read as if the work was done per
-task on those dates. Each commit message now says the code was written before it.
+A second mistake: the first history rewrite grouped finished code into task-ID
+commits, which could read as if the work was done per task on those dates. The
+rewritten commits now say the code was written before the commit.
 
 ## One thing I wouldn't hand to AI
 

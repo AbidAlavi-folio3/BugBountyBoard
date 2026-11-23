@@ -12,14 +12,14 @@ how the store behaves in development.
 
 Home page, median of 3 runs.
 
-| Metric | Value |
-| --- | --- |
-| Performance score | 93 |
-| First Contentful Paint | 2.52 s |
-| Largest Contentful Paint | 2.52 s |
-| Total Blocking Time | 0–32 ms |
-| Speed Index | 3.4 s |
-| Accessibility score | 95 (fails color contrast) |
+| Metric                   | Value                     |
+| ------------------------ | ------------------------- |
+| Performance score        | 93                        |
+| First Contentful Paint   | 2.52 s                    |
+| Largest Contentful Paint | 2.52 s                    |
+| Total Blocking Time      | 0–32 ms                   |
+| Speed Index              | 3.4 s                     |
+| Accessibility score      | 95 (fails color contrast) |
 
 The slowest spots, from the Lighthouse audits:
 
@@ -34,12 +34,12 @@ I first moved the Google Fonts link into `index.html`, which saved about 0.15 s.
 The render-blocking estimate was still about 1.3 s, so I tested whether the
 font request was the cause. I removed the font entirely for one run:
 
-| Run | First Contentful Paint |
-| --- | --- |
-| Baseline (Google Fonts via `@import`) | 2.52 s |
-| Font link in `index.html` | 2.36 s |
-| Fonts removed (test only) | 1.22 s |
-| **Self-hosted with `@fontsource` (kept)** | **1.82 s** |
+| Run                                       | First Contentful Paint |
+| ----------------------------------------- | ---------------------- |
+| Baseline (Google Fonts via `@import`)     | 2.52 s                 |
+| Font link in `index.html`                 | 2.36 s                 |
+| Fonts removed (test only)                 | 1.22 s                 |
+| **Self-hosted with `@fontsource` (kept)** | **1.82 s**             |
 
 The fonts are now bundled with the app (`@fontsource/dm-sans`,
 `@fontsource/space-grotesk`, imported in `src/main.tsx`). Nothing goes to Google
@@ -67,11 +67,11 @@ Lighthouse numbers.
 
 ## Final numbers
 
-| Page | Performance | Accessibility | FCP |
-| --- | --- | --- | --- |
-| Home | 98 | 100 | 1.82 s |
-| Cart | 98 | 100 | 1.82 s |
-| Login | 98 | 100 | 1.82 s |
+| Page  | Performance | Accessibility | FCP    |
+| ----- | ----------- | ------------- | ------ |
+| Home  | 98          | 100           | 1.82 s |
+| Cart  | 98          | 100           | 1.82 s |
+| Login | 98          | 100           | 1.82 s |
 
 Accessibility went from 95 to 100 because of the color-contrast fixes. The
 contrast change is in `styles.css`: the eyebrow, muted, category, rating, stock, sold,
