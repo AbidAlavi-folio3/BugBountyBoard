@@ -25,3 +25,13 @@ record what was checked and what changed.
   `4071e55` because a stale debounced value wrote the old search back into the
   URL. It now passes.
 - Result count shows under the heading ("1,250 products"). *Browser.*
+
+## D2-3 UI states
+
+- Loading: skeleton grid on the list, "Loading product…" on details. *Browser.*
+- Empty: "No matching products" with a clear action (search `zzzz-none`). *Browser.*
+- Error: "Simulate server error (500)" shows "Products could not load" with
+  "Service unavailable. Please retry." *Browser.*
+- Retry: "Try again" starts a new request, and results return once the server
+  responds. *Browser.*
+- Success: product grid with pagination. *Browser.*
