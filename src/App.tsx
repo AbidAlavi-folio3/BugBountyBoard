@@ -25,7 +25,7 @@ function Header() {
     <header className="site-header">
       <div className="container header-inner">
         <Link to="/" className="logo">
-          <span className="logo-mark">{`</>`}</span> bug<span>bazaar</span>
+          <span className="logo-mark">{`</>`}</span> The Bug <span>Bazaar</span>
           <span className="logo-dot">.</span>
         </Link>
         <nav aria-label="Main navigation">
@@ -112,7 +112,7 @@ export default function App() {
       <BackToTop />
       <footer className="site-footer">
         <div className="container footer-inner">
-          <strong>bugbazaar.</strong>
+          <strong>The Bug Bazaar.</strong>
           <span>Made for the developers who keep shipping. © 2026</span>
           <span>⌨️ 🦆 ☕</span>
         </div>
