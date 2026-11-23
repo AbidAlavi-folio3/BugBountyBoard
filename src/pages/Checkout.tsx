@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/services';
-import { userMessage } from '../api/client';
+import { remoteError } from '../api/client';
 import { cartActions } from '../store';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { cartTotal, money } from '../utils/catalog';
@@ -38,19 +38,23 @@ export function Checkout() {
   const navigate = useNavigate();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
+  const [retryable, setRetryable] = useState(false);
   const busy = useRef(false);
   async function place() {
     if (!token || !lines.length || busy.current) return;
     busy.current = true;
     setPending(true);
     setError('');
+    setRetryable(false);
     try {
       const order = await api.checkout(lines, checkoutKey(), token);
       clearCheckoutKey();
       dispatch(cartActions.clear());
       navigate(`/orders/${order.id}`, { replace: true });
     } catch (e) {
-      setError(userMessage(e));
+      const failure = remoteError(e);
+      setError(failure.message);
+      setRetryable(failure.retryable);
     } finally {
       busy.current = false;
       setPending(false);
@@ -85,6 +89,14 @@ export function Checkout() {
           {error && (
             <p role="alert" className="form-error">
               {error} <Link to="/cart">Review cart</Link>
+              {retryable && (
+                <>
+                  {' '}
+                  <button type="button" className="text-button" onClick={place}>
+                    Try again
+                  </button>
+                </>
+              )}
             </p>
           )}
           <button className="primary-button full" disabled={pending} onClick={place}>

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { api } from '../api/services';
-import { userMessage } from '../api/client';
+import { remoteError } from '../api/client';
 import { ProductCard, StateView } from '../components/Ui';
 import { useDebounced } from '../hooks';
 import type { Category, Filters, ProductsResponse, Remote, Sort } from '../types/api';
@@ -71,7 +71,7 @@ export function Catalog() {
       })
       .catch((e) => {
         if (!controller.signal.aborted && id === seq.current)
-          setResult({ key: requestKey, state: { status: 'error', message: userMessage(e) } });
+          setResult({ key: requestKey, state: remoteError(e) });
       });
     return () => controller.abort();
   }, [filters, retry, simulateError, requestKey]);

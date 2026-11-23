@@ -1,5 +1,5 @@
 import { mockFetch } from '../mocks/server';
-import type { ApiError } from '../types/api';
+import type { ApiError, RemoteError } from '../types/api';
 export class HttpError extends Error {
   constructor(
     public status: number,
@@ -33,6 +33,16 @@ export function userMessage(error: unknown): string {
   }
   if (error instanceof DOMException && error.name === 'AbortError') return 'Request cancelled.';
   return 'Could not connect. Please retry.';
+}
+/** The one place that turns a thrown error into state a page can render. */
+export function remoteError(error: unknown): RemoteError {
+  const httpStatus = error instanceof HttpError ? error.status : undefined;
+  return {
+    status: 'error',
+    message: userMessage(error),
+    httpStatus,
+    retryable: httpStatus === undefined || httpStatus >= 500,
+  };
 }
 export async function request<T>(path: string, init: RequestInit = {}, token?: string): Promise<T> {
   const headers = new Headers(init.headers);

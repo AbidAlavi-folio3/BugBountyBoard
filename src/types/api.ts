@@ -24,5 +24,12 @@ export type Filters = {
   page: number;
   inStock: boolean;
 };
-export type Remote<T> =
-  { status: 'loading' } | { status: 'success'; data: T } | { status: 'error'; message: string };
+export type RemoteError = {
+  status: 'error';
+  message: string;
+  /** HTTP status when the server answered; undefined for network failures. */
+  httpStatus?: number;
+  /** True when trying the same request again could succeed (network or 5xx). */
+  retryable: boolean;
+};
+export type Remote<T> = { status: 'loading' } | { status: 'success'; data: T } | RemoteError;

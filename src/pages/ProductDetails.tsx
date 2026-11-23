@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/services';
-import { userMessage } from '../api/client';
+import { remoteError } from '../api/client';
 import { StateView } from '../components/Ui';
 import { useAppDispatch } from '../hooks';
 import { cartActions } from '../store';
@@ -22,8 +22,7 @@ export function ProductDetails() {
       .product(id || '', controller.signal)
       .then((data) => setResult({ key: requestKey, state: { status: 'success', data } }))
       .catch((e) => {
-        if (!controller.signal.aborted)
-          setResult({ key: requestKey, state: { status: 'error', message: userMessage(e) } });
+        if (!controller.signal.aborted) setResult({ key: requestKey, state: remoteError(e) });
       });
     return () => controller.abort();
   }, [id, retry, requestKey]);
@@ -34,11 +33,13 @@ export function ProductDetails() {
       </Link>
       {state.status === 'loading' ? (
         <StateView title="Loading product…" />
+      ) : state.status === 'error' && state.httpStatus === 404 ? (
+        <StateView title="Product not found" description="It may have been removed." />
       ) : state.status === 'error' ? (
         <StateView
           title="Product unavailable"
           description={state.message}
-          onRetry={() => setRetry((n) => n + 1)}
+          onRetry={state.retryable ? () => setRetry((n) => n + 1) : undefined}
         />
       ) : (
         <div className="detail-layout">

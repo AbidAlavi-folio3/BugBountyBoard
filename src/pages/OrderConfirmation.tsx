@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/services';
-import { userMessage } from '../api/client';
+import { remoteError } from '../api/client';
 import { useAppSelector } from '../hooks';
 import { StateView } from '../components/Ui';
 import type { Order, Remote } from '../types/api';
@@ -14,14 +14,18 @@ export function OrderConfirmation() {
     api
       .order(id || '', token)
       .then((data) => setState({ status: 'success', data }))
-      .catch((e) => setState({ status: 'error', message: userMessage(e) }));
+      .catch((e) => setState(remoteError(e)));
   }, [id, token]);
   return (
     <main className="container page confirmation">
       {state.status === 'loading' ? (
         <StateView title="Loading your order…" />
       ) : state.status === 'error' ? (
-        <StateView title="Order unavailable" description={state.message} />
+        state.httpStatus === 404 ? (
+          <StateView title="Order not found" description="Check the link and try again." />
+        ) : (
+          <StateView title="Order unavailable" description={state.message} />
+        )
       ) : (
         <>
           <div className="success-icon">✓</div>
