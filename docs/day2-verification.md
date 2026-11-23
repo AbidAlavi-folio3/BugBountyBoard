@@ -6,3 +6,10 @@ tests only.
 
 Baseline commit `35f798a` already contains most of Day 2. Commits with IDs
 record what was checked and what changed.
+
+## D2-1 Product list
+
+- Grid shows image, name, category, rating, price, and stock for each product.
+  Prices come from cents through `money()` (`499` shows as `$4.99`). *Browser.*
+- Cards are links plus an "Add to cart" button, so both are reached with Tab. *Code.*
+  A keyboard-only pass in the browser is still to do.
