@@ -63,7 +63,7 @@ for the endpoints.
 ## Demo notes
 
 - The product list has a "Simulate server error" checkbox to see the error state.
-- `p1` is out of stock, so trying to check it out shows the 409 message.
+- `p1` is out of stock, so its "Add to cart" button is disabled. A 409 appears only when an item's stock drops after it is in the cart. See the console snippet in `docs/day3-verification.md`.
 - Stock and orders are stored in the browser's `localStorage`, so they persist
   across reloads. Clear site data to reset them.
 - Checkout is a demo. No payment is processed.

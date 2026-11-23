@@ -28,14 +28,14 @@ type CartLine = { product: Product; quantity: number };
 
 ## Endpoints
 
-| Method | Endpoint | Success | Errors |
-| --- | --- | --- | --- |
-| GET | `/api/products?search=&category=&sort=&page=&inStock=` | 200 `{ items: Product[], total: number }`, 24 per page | 500 (`?fail=500`) |
-| GET | `/api/products/:id` | 200 `Product` | 404 `NOT_FOUND` |
-| POST | `/api/login` | 200 `{ token, user }` | 400 `VALIDATION` with per-field `details`, 401 `INVALID_CREDENTIALS` |
-| GET | `/api/me` | 200 `User` | 401 `UNAUTHORIZED` |
-| POST | `/api/orders` | 201 `Order` (`status: 'queued'`) | 400 `VALIDATION`, 401 `UNAUTHORIZED`, 409 `OUT_OF_STOCK` with `details.productId` and `details.productName` |
-| GET | `/api/orders/:id` | 200 `Order` | 401 `UNAUTHORIZED`, 404 `NOT_FOUND` |
+| Method | Endpoint                                               | Success                                                | Errors                                                                                                      |
+| ------ | ------------------------------------------------------ | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/products?search=&category=&sort=&page=&inStock=` | 200 `{ items: Product[], total: number }`, 24 per page | 500 (`?fail=500`)                                                                                           |
+| GET    | `/api/products/:id`                                    | 200 `Product`                                          | 404 `NOT_FOUND`                                                                                             |
+| POST   | `/api/login`                                           | 200 `{ token, user }`                                  | 400 `VALIDATION` with per-field `details`, 401 `INVALID_CREDENTIALS`                                        |
+| GET    | `/api/me`                                              | 200 `User`                                             | 401 `UNAUTHORIZED`                                                                                          |
+| POST   | `/api/orders`                                          | 201 `Order` (`status: 'queued'`)                       | 400 `VALIDATION`, 401 `UNAUTHORIZED`, 409 `OUT_OF_STOCK` with `details.productId` and `details.productName` |
+| GET    | `/api/orders/:id`                                      | 200 `Order`                                            | 401 `UNAUTHORIZED`, 404 `NOT_FOUND`                                                                         |
 
 Any other path returns 404 `NOT_FOUND`.
 
@@ -60,13 +60,14 @@ Any other path returns 404 `NOT_FOUND`.
 
 Each error is mapped by `remoteError()` in `src/api/client.ts`:
 
-| Status | Shown to the user |
-| --- | --- |
-| 400 | "Please check the information you entered." (login shows field messages) |
-| 401 | "Please sign in again." (on login: "Email or password is incorrect.") |
-| 404 | "We could not find that item." (and a Not Found screen) |
-| 409 | "`<product>` is out of stock." |
-| 500 or network | "Service unavailable. Please retry." with a retry button |
+| Status          | Shown to the user                                                        |
+| --------------- | ------------------------------------------------------------------------ |
+| 400             | "Please check the information you entered." (login shows field messages) |
+| 401             | "Please sign in again." (on login: "Email or password is incorrect.")    |
+| 404             | "We could not find that item." (and a Not Found screen)                  |
+| 409             | "`<product>` is out of stock."                                           |
+| 500             | "Service unavailable. Please retry." with a retry button                 |
+| Network failure | "Could not connect. Please retry." with a retry button                   |
 
 Raw error codes and server messages are never shown.
 
