@@ -1,36 +1,69 @@
-# Bug Bounty Board: Final Boss
+# The Bug Bazaar
 
-You have 30 minutes. Build a small React app that lists bugs, searches them, adds new ones, and opens a details page.
+A small store that sells developer gear: keyboards, rubber ducks, coffee, and
+stickers. Built with React, TypeScript, Vite, and Redux Toolkit. The API is a mock
+that runs in the browser, so no backend is needed.
 
-## Get started
+## Run it (about 5 minutes)
 
-1. Unzip this project and open the folder in your editor.
-2. Run `npm install` and `npm run dev`.
-3. Run `git init`, then create your own **private** repo and push to it.
-4. Give your evaluator access to the repo.
-5. Commit as you go. Your commit history is part of your submission.
+Requirements: Node 22 or later, and npm.
 
-`src/mockApi.js` fails about one time in four on purpose. Please don't change it.
+```powershell
+npm install
+npm run dev
+```
 
-## Missions
+Open http://localhost:5173. Sign in with **demo@bugbazaar.dev / password123** to
+check out.
 
-| Mission | Requirements | Points |
-| --- | --- | --- |
-| Load the bugs | Call `fetchBugs` on mount; show loading and error states | 5 |
-| Show the board | Use a `BugList` and `BugCard` component with stable keys | 4 |
-| Search | Filter by title using a derived value, without storing filtered results in state | 4 |
-| Report a bug | Add through a controlled form, reject blank titles, and update state immutably | 5 |
-| Open a case | Add a `/bugs/:id` page and a route for unknown URLs | 2 |
-| Submit and walk through | Submit working, readable code; explain where the state lives, how data flows, and one trade-off | 5 |
+## Scripts
 
-Bonus for bragging rights only: add a Retry button to the error state.
+| Command                | What it does                                                   |
+| ---------------------- | -------------------------------------------------------------- |
+| `npm run dev`          | Starts the dev server with hot reload                          |
+| `npm run build`        | Production build into `dist/` (no type check; run `typecheck`) |
+| `npm run preview`      | Serves the production build locally                            |
+| `npm run lint`         | ESLint (TypeScript and React hooks rules)                      |
+| `npm run format`       | Prettier, rewrites files in `src/`                             |
+| `npm run format:check` | Prettier, fails if a file isn't formatted                      |
+| `npm run typecheck`    | TypeScript in strict mode, no emit                             |
+| `npm test`             | Runs the test suite once (vitest)                              |
 
-## Rules
+Before pushing, run `npm run lint`, `npm run format:check`, `npm run typecheck`,
+and `npm test`. CI runs the same checks, and the build too.
 
-Use the browser, DevTools, and documentation. Don't use AI tools.
+## Environment variables
 
-## Submit
+Set these in a `.env.local` file, or in the shell. All are optional.
 
-1. Push your final commit to `main` before time is called.
-2. Paste your repo link into the evaluation form.
-3. Be ready for a 3-minute walkthrough.
+| Variable             | Default | Meaning                                                                   |
+| -------------------- | ------- | ------------------------------------------------------------------------- |
+| `VITE_API_MODE`      | mock    | Set to `real` to send requests to `VITE_API_BASE_URL` instead of the mock |
+| `VITE_API_BASE_URL`  | empty   | Base URL of the real API, used when `VITE_API_MODE=real`                  |
+| `VITE_MOCK_DELAY_MS` | 350     | Delay added to each mock request, to imitate a network                    |
+
+## Project layout
+
+```
+src/
+  api/        Request layer, endpoint functions, cache
+  components/ Shared UI and the error boundary
+  hooks/      Custom hooks
+  mocks/      Mock API and seed data (5,000 products)
+  pages/      One file per route
+  store/      Redux store (cart and session)
+  types/      Shared types, including the API contract
+  utils/      Pure helpers and the error logger
+docs/         Design notes: API contract, architecture, decisions, performance
+```
+
+Start with `docs/ARCHITECTURE.md` for how the pieces fit, and `docs/api-contract.md`
+for the endpoints.
+
+## Demo notes
+
+- The product list has a "Simulate server error" checkbox to see the error state.
+- `p1` is out of stock, so trying to check it out shows the 409 message.
+- Stock and orders are stored in the browser's `localStorage`, so they persist
+  across reloads. Clear site data to reset them.
+- Checkout is a demo. No payment is processed.
