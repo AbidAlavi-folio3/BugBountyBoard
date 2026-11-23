@@ -6,6 +6,31 @@ import { cartActions } from '../store';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { cartTotal, money } from '../utils/catalog';
 import { StateView } from '../components/Ui';
+
+// One key per checkout attempt. It is kept in sessionStorage, not in component
+// state, so a reload during checkout retries with the same key. The server
+// returns the existing order for a key it has already completed, so a retry
+// can't create a second order. The key is cleared only after success.
+const CHECKOUT_KEY = 'bazaar-checkout-key';
+function checkoutKey(): string {
+  try {
+    const existing = sessionStorage.getItem(CHECKOUT_KEY);
+    if (existing) return existing;
+    const created = crypto.randomUUID();
+    sessionStorage.setItem(CHECKOUT_KEY, created);
+    return created;
+  } catch {
+    return crypto.randomUUID(); // storage disabled: fall back to a per-click key
+  }
+}
+function clearCheckoutKey(): void {
+  try {
+    sessionStorage.removeItem(CHECKOUT_KEY);
+  } catch {
+    /* storage disabled */
+  }
+}
+
 export function Checkout() {
   const lines = useAppSelector((s) => s.cart.lines);
   const token = useAppSelector((s) => s.session.token);
@@ -13,7 +38,6 @@ export function Checkout() {
   const navigate = useNavigate();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
-  const key = useRef(crypto.randomUUID());
   const busy = useRef(false);
   async function place() {
     if (!token || !lines.length || busy.current) return;
@@ -21,7 +45,8 @@ export function Checkout() {
     setPending(true);
     setError('');
     try {
-      const order = await api.checkout(lines, key.current, token);
+      const order = await api.checkout(lines, checkoutKey(), token);
+      clearCheckoutKey();
       dispatch(cartActions.clear());
       navigate(`/orders/${order.id}`, { replace: true });
     } catch (e) {
