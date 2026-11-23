@@ -109,7 +109,29 @@ else was considered, and why.
 - **Why not yet:** the cache is small and easy to explain. A library would be the
   next step if the app grew. The trade-off is in `docs/caching.md`.
 
-## D4 (not yet decided in writing)
+## D4-3 Memoization and virtualization
 
-The stock poll in `App.tsx` already runs every 15 seconds. The WebSocket
-comparison will be recorded here when D4-4 is done.
+- **Chosen:** no virtualization, and no `React.memo` on product cards.
+- **Why:** the API returns 24 products per page, so the DOM never holds 5,000
+  items. Cards re-render on each keystroke, which is small work. Nothing measured
+  a problem, so nothing was added. Details and numbers are in `docs/performance.md`.
+- **Would change if:** the page size grew, or profiling showed the grid re-rendering
+  costly work.
+
+## D4-4 Live stock: polling, not WebSockets
+
+- **Chosen:** the cart polls the stock of its products every 15 seconds, using
+  `productFresh()`, which skips the cache (`src/App.tsx`).
+- **Considered:** WebSockets, and Server-Sent Events.
+- **Why polling for this app:** the cart only needs stock every few seconds, the
+  request count is small (one call per cart line), and it works through any proxy
+  or CDN. No server-side connection state is needed.
+- **How the requirements are met:** a failed poll is ignored and the next tick
+  retries, so the feed recovers after a disconnect. The interval is cleared when
+  the app unmounts, so polling stops when the page goes away.
+- **How WebSockets would work:** the server keeps a connection open per client and
+  pushes a message when a product's stock changes. Clients reconnect with backoff
+  after a drop, and resync the full stock list on reconnect, because they may have
+  missed messages. Choose WebSockets when updates are frequent, need to arrive
+  within a second, or flow both ways (such as chat). For a cart that checks stock
+  every 15 seconds, the extra connection management isn't worth it.
