@@ -27,6 +27,10 @@ export const api = {
   },
   product: (id: string, signal?: AbortSignal): Promise<Product> =>
     cached(`product:${id}`, () => request(`/api/products/${encodeURIComponent(id)}`, { signal })),
+  // Always goes to the server. Used by the cart's stock sync, which must see
+  // stock changes sooner than the 60-second cache would allow.
+  productFresh: (id: string): Promise<Product> =>
+    request(`/api/products/${encodeURIComponent(id)}`),
   login: (email: string, password: string): Promise<LoginResponse> =>
     request('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   me: (token: string): Promise<User> => request('/api/me', {}, token),

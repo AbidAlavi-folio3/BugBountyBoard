@@ -59,7 +59,7 @@ export default function App() {
         product: { id: string };
       }[];
       if (!lines.length) return;
-      Promise.all(lines.map((l) => api.product(l.product.id)))
+      Promise.all(lines.map((l) => api.productFresh(l.product.id)))
         .then((products) => dispatch(cartActions.syncStock(products)))
         .catch(() => {
           /* retry on next poll */

@@ -26,7 +26,8 @@ Some staleness is fine here, and some is not.
   shouldn't wait for a fetch on every visit, and the list is only a guide.
 - **Not acceptable:** trusting stock at checkout. The server checks stock when the
   order is placed and returns 409 for an item that ran out. The cart's stock check
-  in `App.tsx` also runs every 15 seconds, and it updates cart quantities.
+  in `App.tsx` runs every 15 seconds. It calls `productFresh`, which skips the cache,
+  so cart quantities follow stock within about 15 seconds.
 
 The rule is that the server is the authority on stock. The cache only makes
 browsing faster.
