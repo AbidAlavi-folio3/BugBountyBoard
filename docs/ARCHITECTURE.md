@@ -26,6 +26,7 @@ src/
     server.ts              The mock API: routes, validation, stock, orders
   types/                   Shared types (api.ts is the contract)
   utils/catalog.ts         Pure helpers: money(), filterProducts(), cartTotal()
+  utils/logger.ts          reportError(): one place for unexpected errors (D4-7)
 docs/                      Written documentation
 ```
 
@@ -54,14 +55,14 @@ flowchart LR
 
 ## Where each kind of state lives
 
-| Kind | Where | Example | Lifetime |
-| --- | --- | --- | --- |
-| Server | The API (mock: `localStorage` `bazaar-stock-v1` and `bazaar-orders-v1`) | Products, stock, orders | Owned by the server |
-| Client, global | Redux (`cart`, `session`) | Cart lines, signed-in user | Saved to `localStorage` (cart) and `sessionStorage` (session) |
-| Client, cache | `api/cache.ts` | Product lists, product details | 60 seconds, memory only |
-| URL | Query string | Search, category, sort, page, in-stock | Lives in the address bar |
-| Local component | `useState`/`useRef` | Form inputs, pending flags, request results | Until the component unmounts |
-| Browser storage, not app state | `sessionStorage` | Checkout key | Until the order succeeds |
+| Kind                           | Where                                                                   | Example                                     | Lifetime                                                      |
+| ------------------------------ | ----------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------- |
+| Server                         | The API (mock: `localStorage` `bazaar-stock-v1` and `bazaar-orders-v1`) | Products, stock, orders                     | Owned by the server                                           |
+| Client, global                 | Redux (`cart`, `session`)                                               | Cart lines, signed-in user                  | Saved to `localStorage` (cart) and `sessionStorage` (session) |
+| Client, cache                  | `api/cache.ts`                                                          | Product lists, product details              | 60 seconds, memory only                                       |
+| URL                            | Query string                                                            | Search, category, sort, page, in-stock      | Lives in the address bar                                      |
+| Local component                | `useState`/`useRef`                                                     | Form inputs, pending flags, request results | Until the component unmounts                                  |
+| Browser storage, not app state | `sessionStorage`                                                        | Checkout key                                | Until the order succeeds                                      |
 
 ## Data flow example: searching the catalog
 
@@ -75,22 +76,49 @@ flowchart LR
 
 ## Routes
 
-| Path | Page | Guard |
-| --- | --- | --- |
-| `/` | Catalog | none |
-| `/products/:id` | ProductDetails | none |
-| `/cart` | Cart | none |
-| `/login` | Login | none |
-| `/account` | Account | signed in |
-| `/checkout` | Checkout | signed in |
-| `/orders/:id` | OrderConfirmation | signed in |
-| anything else | Not found | none |
+| Path            | Page              | Guard     |
+| --------------- | ----------------- | --------- |
+| `/`             | Catalog           | none      |
+| `/products/:id` | ProductDetails    | none      |
+| `/cart`         | Cart              | none      |
+| `/login`        | Login             | none      |
+| `/account`      | Account           | signed in |
+| `/checkout`     | Checkout          | signed in |
+| `/orders/:id`   | OrderConfirmation | signed in |
+| anything else   | Not found         | none      |
+
+## Design patterns (D5-2)
+
+Three patterns are used in the store.
+
+1. **Container and presentational components.** Pages are containers: they own
+   the data, the request state, and the handlers. `StateView` in `components/Ui.tsx`
+   is presentational: it takes a title, a description, and an optional retry, and
+   renders them. Every loading, empty, and error screen uses it, so they look the
+   same across pages. `ProductCard` is a mostly presentational piece that dispatches
+   to the cart, so it is not purely presentational.
+2. **Custom hooks.** `useDebounced` (in `hooks/index.ts`) delays the search value by
+   300 ms, and the catalog uses it so a request isn't sent on every keystroke.
+   `useBackToTop` tracks scroll position, and the Back to Top button uses it. Each
+   hook owns its effect and its cleanup, so the logic can be reused and tested
+   (`hooks/hooks.test.tsx`).
+3. **Adapter.** Two adapters sit between the app and the outside world.
+   - `api/services.ts` adapts the endpoints to typed functions, so pages never build
+     URLs or parse JSON. Changing an endpoint touches one file.
+   - `remoteError()` in `api/client.ts` adapts any thrown error into a `RemoteError`
+     that pages can render. Pages never see raw `HttpError`s or server text.
+
+The mock/real switch in `request()` is a fourth kind of substitution: the same call
+goes to the mock or to a real base URL, depending on `VITE_API_MODE`.
 
 ## Things to know
 
 - `App.tsx` reads `localStorage` directly for the stock sync instead of going
   through the store. This is a shortcut that should be cleaned up.
 - `src/services/productService.ts` isn't used and should be deleted.
+- The stock poll calls `productFresh()`, which skips the cache. Other reads use the cache, so a cached product can be up to 60 seconds old (see `docs/caching.md`).
+- Fonts are bundled with `@fontsource` and imported in `src/main.tsx`. Nothing loads from Google at runtime.
+- CI runs lint, format check, typecheck, tests, and build (`.github/workflows/ci.yml`).
 - The legacy Week 1 files (`App.jsx`, `main.jsx`, `mockApi.js`, `components/Bug*`,
   `pages/BugDetails.jsx`, `pages/NotFound.jsx`) are still in the repo but are not
   imported. `mockApi.js` is in the README's "don't change" list, so it was left as is.
