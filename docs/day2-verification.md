@@ -35,3 +35,14 @@ record what was checked and what changed.
 - Retry: "Try again" starts a new request, and results return once the server
   responds. *Browser.*
 - Success: product grid with pagination. *Browser.*
+
+## D2-4 useEffect and cleanup
+
+- Catalog aborts the in-flight request when filters change (`AbortController`),
+  and ignores late responses. *Code.*
+- ProductDetails aborts the request when the id changes, and stores results
+  with their request key so an old product is never shown. *Code.*
+- The stock-sync interval in `App.tsx` is cleared on unmount. *Code.*
+- Back to Top's scroll listener is removed on unmount. *Tested* in
+  `src/hooks/hooks.test.tsx`.
+- Not yet verified in the browser: switching products quickly on the details page.
