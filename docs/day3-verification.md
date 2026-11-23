@@ -24,3 +24,14 @@ still open.
   sessionStorage until success (`src/pages/Checkout.tsx`), and the server returns
   the existing order for a completed key (`server.test.ts`). *Code and tests.
   Not browser-tested for a reload during a live checkout.*
+
+## D3-3 Auth
+
+- A wrong password shows "Email or password is incorrect." *Browser.*
+- Protected pages redirect to login, and after a successful login the user returns
+  to the page they asked for. *Browser:* `/account` redirected to `/login`, and
+  logging in returned to `/account`.
+- The submit guard uses a ref, so a fast double click sends one request. *Code.*
+- A 401 on an authenticated call signs the user out. *Code.* Not browser-tested,
+  because the mock token never expires.
+- `docs/auth.md` explains where the token is stored and the trade-off.
