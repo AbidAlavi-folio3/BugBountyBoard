@@ -12,7 +12,8 @@
    `/login` when there is no token. The original path is passed in router
    state, so after login the user returns to where they were.
 5. If any authenticated call returns 401, the centralized handler signs the
-   user out, which clears the Redux session and `sessionStorage`. The
+   user out. The Redux session is emptied, and that empty state is saved to
+   `sessionStorage`. The
    Protected route then redirects to login.
 
 ## Where the token lives, and the trade-off
