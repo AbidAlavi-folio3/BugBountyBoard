@@ -1,4 +1,5 @@
 import { request } from './client';
+import { cached, clearCache } from './cache';
 import type {
   Filters,
   LoginResponse,
@@ -17,20 +18,28 @@ export const api = {
       page: String(f.page),
       inStock: String(f.inStock),
     });
-    if (fail) q.set('fail', '500');
-    return request(`/api/products?${q}`, { signal });
+    // Simulated failures always go to the server, so they are never served from cache.
+    if (fail) {
+      q.set('fail', '500');
+      return request(`/api/products?${q}`, { signal });
+    }
+    return cached(`products?${q}`, () => request(`/api/products?${q}`, { signal }));
   },
   product: (id: string, signal?: AbortSignal): Promise<Product> =>
-    request(`/api/products/${encodeURIComponent(id)}`, { signal }),
+    cached(`product:${id}`, () => request(`/api/products/${encodeURIComponent(id)}`, { signal })),
   login: (email: string, password: string): Promise<LoginResponse> =>
     request('/api/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   me: (token: string): Promise<User> => request('/api/me', {}, token),
-  checkout: (items: CartLine[], key: string, token: string): Promise<Order> =>
-    request(
+  checkout: async (items: CartLine[], key: string, token: string): Promise<Order> => {
+    const order = await request<Order>(
       '/api/orders',
       { method: 'POST', body: JSON.stringify({ items, idempotencyKey: key }) },
       token,
-    ),
+    );
+    // The server changed stock, so cached product data is now out of date.
+    clearCache();
+    return order;
+  },
   order: (id: string, token: string): Promise<Order> =>
     request(`/api/orders/${encodeURIComponent(id)}`, {}, token),
 };
