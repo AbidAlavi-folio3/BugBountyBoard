@@ -1,0 +1,67 @@
+name: Deploy to GitHub Pages
+
+# Deploys the app to GitHub Pages after every push to main (including merged PRs).
+# Pull requests never deploy. The checks run again here, so a bad commit can't
+# reach the live site even if branch protection were bypassed.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deployment at a time. A newer push waits, and an older one is not cancelled mid-deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Checks
+        run: |
+          npm run lint
+          npm run format:check
+          npm run typecheck
+          npm test
+
+      - name: Build for the Pages sub-path
+        # The site is served from https://<owner>.github.io/BugBountyBoard/
+        env:
+          VITE_BASE: /BugBountyBoard/
+        run: npm run build
+
+      - name: Copy index.html to 404.html
+        # GitHub Pages serves 404.html for unknown paths. Copying the app's HTML there
+        # lets a refresh on a deep link (for example /products/p2) load the app.
+        run: cp dist/index.html dist/404.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
