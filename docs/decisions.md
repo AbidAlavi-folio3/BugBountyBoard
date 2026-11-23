@@ -25,8 +25,8 @@ else was considered, and why.
 
 - **Chosen:** `strict: true`. The lint config bans `any`.
 - **Why:** the shared contract types catch mismatches between pages and the API.
-- **Note:** `src/services/productService.ts` is dead code from an earlier attempt.
-  It compiles but isn't used. Delete it after review.
+- **Note:** an unused service file from an earlier attempt was removed, along with
+  the Week 1 starter files.
 
 ## D1-4 One request layer
 

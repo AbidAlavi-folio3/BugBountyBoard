@@ -115,10 +115,8 @@ goes to the mock or to a real base URL, depending on `VITE_API_MODE`.
 
 - `App.tsx` reads `localStorage` directly for the stock sync instead of going
   through the store. This is a shortcut that should be cleaned up.
-- `src/services/productService.ts` isn't used and should be deleted.
 - The stock poll calls `productFresh()`, which skips the cache. Other reads use the cache, so a cached product can be up to 60 seconds old (see `docs/caching.md`).
 - Fonts are bundled with `@fontsource` and imported in `src/main.tsx`. Nothing loads from Google at runtime.
 - CI runs lint, format check, typecheck, tests, and build (`.github/workflows/ci.yml`).
-- The legacy Week 1 files (`App.jsx`, `main.jsx`, `mockApi.js`, `components/Bug*`,
-  `pages/BugDetails.jsx`, `pages/NotFound.jsx`) are still in the repo but are not
-  imported. `mockApi.js` is in the README's "don't change" list, so it was left as is.
+- The Week 1 starter files (the bug board, `mockApi.js`) and an unused service
+  file were removed. The history still has them.

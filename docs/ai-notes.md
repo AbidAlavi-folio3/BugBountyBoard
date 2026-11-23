@@ -13,8 +13,9 @@ records one notable use.
   Redux and vitest packages, and failing type checks).
 - **Kept:** the Vite entry change in `index.html`, the Redux, react-redux, and
   vitest installs, and the `typecheck` and `test` scripts.
-- **Changed and why:** I kept `src/services/productService.ts` but fixed its import
-  instead of deleting it, because the permission to delete was denied. I checked
+- **Changed and why:** I first kept `src/services/productService.ts` and fixed its
+  import, because the permission to delete was denied. Later I removed it, along with
+  the unused Week 1 files. I checked
   the type check, tests, and build myself after each change. I did not take the
   assistant's word that they passed.
 
