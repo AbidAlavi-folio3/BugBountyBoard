@@ -46,3 +46,15 @@ record what was checked and what changed.
 - Back to Top's scroll listener is removed on unmount. *Tested* in
   `src/hooks/hooks.test.tsx`.
 - Not yet verified in the browser: switching products quickly on the details page.
+
+## D2-5 Custom hooks
+
+- `useDebounced` (300 ms) and `useBackToTop` are typed and reusable in `src/hooks`.
+- Both are covered by `src/hooks/hooks.test.tsx` (4 tests): debounce timing,
+  threshold, and listener cleanup.
+
+## D2-6 Race conditions
+
+- Typing "k", "ke", "keyb", "keyboard" quickly ends with the results for
+  "keyboard" (1,250 products). Older responses are dropped by a sequence
+  counter and by aborting the request. *Browser.*
