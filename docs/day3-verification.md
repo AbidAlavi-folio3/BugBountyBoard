@@ -35,3 +35,15 @@ still open.
 - A 401 on an authenticated call signs the user out. *Code.* Not browser-tested,
   because the mock token never expires.
 - `docs/auth.md` explains where the token is stored and the trade-off.
+
+## D3-4 Backend errors
+
+- Every error goes through `remoteError()` (`src/api/client.ts`). Raw server text
+  never reaches the screen.
+- 404: "Product not found" and "Order not found". *Browser.*
+- 409: names the item. *Browser.*
+- 500: "Try again" on checkout and retry on the catalog and details pages. *Code.*
+  The mock API only simulates 500 on the product list, so the checkout retry is
+  *not browser-tested*.
+- 400: login shows each field's message. *Code.*
+- 401: signs out. *Code.*
