@@ -1,0 +1,400 @@
+/* ==========================================================================
+   Store refresh: modern surfaces, realistic product UI, and motion.
+   Loaded after styles.css, so these rules take precedence where they overlap.
+   Motion respects prefers-reduced-motion (see the block at the end).
+   ========================================================================== */
+
+:root {
+  --brand: #24372d;
+  --brand-2: #3d5c47;
+  --accent: #e2a65e;
+  --ink: #202a33;
+  --muted-ink: #4f5a52;
+  --surface: #ffffff;
+  --line: #e9ebe8;
+  --radius: 16px;
+  --shadow-sm: 0 1px 2px #1d2b2214, 0 1px 1px #1d2b220d;
+  --shadow-md: 0 10px 30px #1d2b2218;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+button {
+  transition:
+    background-color 0.2s var(--ease),
+    transform 0.12s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Route transitions: the wrapper is keyed by path in App.tsx, so each page fades in. */
+.route-view {
+  animation: page-in 0.36s var(--ease) both;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Header: sticky and frosted, with a bump when the cart count changes. */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #f8f9f7e6;
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.cart-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  margin-left: 4px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  animation: badge-bump 0.42s var(--ease);
+}
+@keyframes badge-bump {
+  0% {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Hero: a gradient banner with floating product tiles. */
+.hero {
+  background: linear-gradient(120deg, var(--brand) 0%, var(--brand-2) 60%, #66836e 100%);
+  border-radius: 24px;
+  color: #f3f7f2;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  position: relative;
+}
+.hero h1,
+.hero h1 em {
+  color: #ffffff;
+}
+.hero p {
+  color: #e3ece5;
+}
+.hero .eyebrow {
+  color: #d5e6d9;
+}
+.hero .primary-button {
+  background: var(--accent);
+  color: var(--brand);
+  box-shadow: 0 8px 20px #e2a65e40;
+}
+.hero .primary-button:hover {
+  background: #f0b774;
+}
+.hero-visual span {
+  background: #ffffff1a;
+  border: 1px solid #ffffff26;
+  animation: float 4.5s ease-in-out infinite;
+}
+.hero-visual span:nth-child(2) {
+  animation-delay: 0.6s;
+}
+.hero-visual span:nth-child(3) {
+  animation-delay: 1.2s;
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Filters: a card, not a bare strip. */
+.filters {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.filters select,
+.filters input[type='search'] {
+  border-radius: 10px;
+  transition:
+    border-color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+.filters select:focus,
+.filters input[type='search']:focus {
+  border-color: var(--brand-2);
+  box-shadow: 0 0 0 3px #3d5c4722;
+  outline: none;
+}
+
+/* Product cards: art tiles, badges, rating, and a hover lift. */
+.product-card {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.product-art {
+  position: relative;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+.art-keyboards {
+  background: linear-gradient(135deg, #dfe9e1, #c6d8cb);
+}
+.art-ducks {
+  background: linear-gradient(135deg, #fff3c4, #ffe08a);
+}
+.art-coffee {
+  background: linear-gradient(135deg, #efe2d6, #d9bfa6);
+}
+.art-stickers {
+  background: linear-gradient(135deg, #e4e0f7, #c9c2ef);
+}
+.product-emoji {
+  display: inline-block;
+  transition: transform 0.35s var(--ease);
+}
+.product-card:hover .product-emoji {
+  transform: scale(1.1) rotate(-4deg);
+}
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: var(--shadow-sm);
+}
+.badge-sold {
+  background: #fbe3de;
+  color: #8a2e1f;
+}
+.badge-low {
+  background: #fdf0d5;
+  color: #6b4300;
+}
+.stars {
+  color: #8a5a12;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.add-button {
+  border-radius: 10px;
+}
+.add-button:hover:not(:disabled) {
+  background: var(--brand-2);
+}
+.add-button.is-added {
+  background: #2f6b43;
+  animation: pop 0.38s var(--ease);
+}
+@keyframes pop {
+  0% {
+    transform: scale(0.94);
+  }
+  60% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Toast: a short confirmation that slides in. */
+.toaster {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  animation: toast-in 0.32s var(--ease) both;
+}
+.toast-icon {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--brand);
+  font-size: 12px;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Cart: free-shipping progress and a clearer summary. */
+.cart-art {
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+}
+.shipping-meter {
+  background: #f1f5f1;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.shipping-meter p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand);
+}
+.meter {
+  height: 8px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #66836e, #2f6b43);
+  transition: width 0.6s var(--ease);
+}
+.summary {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.summary-row.total strong {
+  font-size: 18px;
+}
+.small-print {
+  font-size: 12px;
+  text-align: center;
+  margin: 10px 0 4px;
+}
+
+/* Footer: a proper multi-column footer. */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 28px;
+  padding: 40px 0 24px;
+}
+.footer-brand {
+  font-size: 18px;
+}
+.footer-heading {
+  margin: 0 0 10px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+.footer-grid p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--muted-ink);
+}
+@media (max-width: 700px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Reduced motion: keep the layout, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Product details: the same art, badge, and rating treatment as the cards. */
+.detail-art {
+  position: relative;
+  border-radius: var(--radius);
+}
+.detail-emoji {
+  font-size: 110px;
+}
+.detail-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 12px;
+}
+.detail-rating .stars {
+  font-size: 18px;
+}
+
+/* Keep price and stock on one row, even on narrow cards. */
+.product-bottom {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+.product-bottom .stock {
+  white-space: nowrap;
+}

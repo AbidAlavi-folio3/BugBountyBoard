@@ -25,3 +25,9 @@ export function filterProducts(products: Product[], filters: Filters): Product[]
   }
 }
 export const PAGE_SIZE = 24;
+
+// Free shipping at $50 (5000 cents). Below that, a flat $5.99 shipping fee.
+export const FREE_SHIPPING_CENTS = 5000;
+export const FLAT_SHIPPING_CENTS = 599;
+export const shippingFor = (subtotal: number): number =>
+  subtotal === 0 || subtotal >= FREE_SHIPPING_CENTS ? 0 : FLAT_SHIPPING_CENTS;

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/services';
 import { remoteError } from '../api/client';
-import { StateView } from '../components/Ui';
+import { StateView, StockBadge, Stars } from '../components/Ui';
+import { notify } from '../utils/toast';
 import { useAppDispatch } from '../hooks';
 import { cartActions } from '../store';
 import type { Product, Remote } from '../types/api';
@@ -43,13 +44,20 @@ export function ProductDetails() {
         />
       ) : (
         <div className="detail-layout">
-          <div className="detail-art" aria-label={`${state.data.category} illustration`}>
-            {state.data.imageUrl}
+          <div
+            className={`detail-art art-${state.data.category}`}
+            aria-label={`${state.data.category} illustration`}
+          >
+            <span className="product-emoji detail-emoji">{state.data.imageUrl}</span>
+            <StockBadge stock={state.data.stock} />
           </div>
           <div className="detail-copy">
             <span className="eyebrow">{state.data.category.toUpperCase()}</span>
             <h1>{state.data.name}</h1>
-            <p className="rating">★ {state.data.rating.toFixed(1)} / 5</p>
+            <div className="detail-rating">
+              <Stars value={state.data.rating} />
+              <span className="muted">{state.data.rating.toFixed(1)} out of 5</span>
+            </div>
             <p className="detail-price">{money(state.data.price)}</p>
             <p className="muted">
               A little upgrade for your daily development workflow. Carefully selected for makers,
@@ -58,10 +66,14 @@ export function ProductDetails() {
             <p className={state.data.stock ? 'stock' : 'sold'}>
               {state.data.stock ? `${state.data.stock} available` : 'Out of stock'}
             </p>
+            <p className="muted small-print">Free shipping on orders over $50.</p>
             <button
               className="primary-button"
               disabled={!state.data.stock}
-              onClick={() => dispatch(cartActions.add(state.data))}
+              onClick={() => {
+                dispatch(cartActions.add(state.data));
+                notify(`${state.data.name} added to cart`);
+              }}
             >
               Add to cart
             </button>

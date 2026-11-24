@@ -4,7 +4,7 @@ import { api } from '../api/services';
 import { remoteError } from '../api/client';
 import { cartActions } from '../store';
 import { useAppDispatch, useAppSelector } from '../hooks';
-import { cartTotal, money } from '../utils/catalog';
+import { cartTotal, money, shippingFor } from '../utils/catalog';
 import { StateView } from '../components/Ui';
 
 // One key per checkout attempt. It is kept in sessionStorage, not in component
@@ -81,10 +81,20 @@ export function Checkout() {
               <strong>{money(l.product.price * l.quantity)}</strong>
             </div>
           ))}
-          <hr />
           <div className="summary-row">
+            <span>Subtotal</span>
+            <span>{money(cartTotal(lines))}</span>
+          </div>
+          <div className="summary-row">
+            <span>Shipping</span>
+            <span>
+              {shippingFor(cartTotal(lines)) === 0 ? 'Free' : money(shippingFor(cartTotal(lines)))}
+            </span>
+          </div>
+          <hr />
+          <div className="summary-row total">
             <strong>Total</strong>
-            <strong>{money(cartTotal(lines))}</strong>
+            <strong>{money(cartTotal(lines) + shippingFor(cartTotal(lines)))}</strong>
           </div>
           {error && (
             <p role="alert" className="form-error">
